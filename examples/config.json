@@ -1,0 +1,8 @@
+{
+  "agendaLists": [
+    { "file": "WITH-BOB.md", "person": "Bob" }
+  ],
+  "meName": "Me",
+  "meLabels": ["Decide myself"],
+  "coldAfterDays": 14
+}

@@ -1,0 +1,9 @@
+{
+  "name": "park",
+  "description": "/park: write down where a session stands as one Markdown file per effort, with the command that resumes it, so ParkBar can show it in the menu bar.",
+  "version": "1.0.0",
+  "author": {
+    "name": "ParkBar contributors"
+  },
+  "keywords": ["notes", "handoff", "resume", "parkbar", "markdown"]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "parkbar",
+  "description": "Claude Code plugins that pair with ParkBar, the menu bar app for work you've parked.",
+  "owner": {
+    "name": "ParkBar contributors"
+  },
+  "plugins": [
+    {
+      "name": "park",
+      "source": "./plugins/park",
+      "description": "/park: write down where a session stands as one Markdown file per effort, with the command that resumes it, so ParkBar can show it in the menu bar.",
+      "category": "productivity",
+      "tags": ["notes", "handoff", "resume", "parkbar", "markdown"]
+    }
+  ]
+}
