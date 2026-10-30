@@ -55,6 +55,10 @@ _Avoid_: Task, action item
 **Linked todo**:
 A todo that points at an effort with `[[Effort name]]`, shown with that effort.
 
+**Inbox**:
+The todos under `## Inbox` in `todo.md`: things to do soon. The open ones are listed at the top of
+the Efforts tab and counted in blue in the menu bar.
+
 **Question**:
 An item under a `Clarify with <person>` label: something only that person can answer. Under a
 `Decide myself` label, something only you can decide.

@@ -10,6 +10,7 @@ struct CLI {
       list                          efforts in the order the panel shows them (active, cold, archived)
       show <name>                   one effort: fields, where I am, questions, then, linked todos
       people                        everyone with open questions, waiting items or an agenda list
+      inbox                         open todos under ## Inbox, with the efforts they link to
       set-target <name> <YYYY-MM-DD|none>
       set-next <name> <text|none>
       move <name> <position>        1 = top of the drag order
@@ -73,6 +74,7 @@ struct CLI {
             case "list": list(vault, today: today)
             case "show": try show(effort(vault, rest), vault: vault, today: today)
             case "people": people(vault)
+            case "inbox": inbox(vault)
             case "set-target":
                 let value = try argument(rest, 1)
                 let day: Day? = value == "none" ? nil : try Day(value).orThrow("not a YYYY-MM-DD day: \(value)")
@@ -138,6 +140,14 @@ struct CLI {
                 group.questions.forEach { print("    \($0.isTickable ? "☐" : "•") \($0.text)") }
             }
             p.waiting.forEach { print("  ⏳ \($0.text)") }
+        }
+    }
+
+    static func inbox(_ vault: Vault) {
+        print("INBOX (\(vault.inbox.count))")
+        for todo in vault.inbox {
+            let links = vault.linkedEfforts(of: todo)
+            print("  - \(todo.text)\(links.isEmpty ? "" : "  → \(links.joined(separator: ", "))")")
         }
     }
 

@@ -15,6 +15,10 @@ public struct Todo: Equatable, Identifiable, Sendable {
 
     public var id: Int { line }
     public var isWaiting: Bool { section.lowercased() == "waiting" && !isChecked }
+    /// Whether it sits under a `## Inbox` heading (any case), ticked or not.
+    public var isInbox: Bool { section.lowercased() == "inbox" }
+    /// What the line shows as code, in order and once each: the commands or replies the Inbox offers to copy.
+    public var codeSpans: [String] { TodoList.codeSpans(in: text) }
 }
 
 public enum TodoList {
@@ -59,6 +63,19 @@ public enum TodoList {
             t = String(t[..<arrow.lowerBound]).trimmingCharacters(in: .whitespaces)
         }
         return t
+    }
+
+    /// The runs the panel's markdown parse marks as code, outside links, in order and once each; blank ones
+    /// are left out. Read from the same parse that draws the line, so a copy button never offers text the
+    /// line does not show as code (a backtick inside a link's address or title, an unmatched one).
+    static func codeSpans(in text: String) -> [String] {
+        guard let parsed = Prose.markdown(text) else { return [] }
+        var spans: [String] = []
+        for run in parsed.runs where run.inlinePresentationIntent?.contains(.code) == true && run.link == nil {
+            let span = String(parsed[run.range].characters)
+            if !span.trimmingCharacters(in: .whitespaces).isEmpty, !spans.contains(span) { spans.append(span) }
+        }
+        return spans
     }
 
     /// "Bob — check …" → "Bob". Only a short, capitalised name counts.

@@ -213,9 +213,14 @@ final class AppModel: ObservableObject {
 
     func copyResume(_ effort: Effort) {
         guard let command = effort.resume else { return }
+        copy(command, toast: "Copied — paste in Terminal")
+    }
+
+    /// Puts the text on the clipboard and says so.
+    func copy(_ text: String, toast: String) {
         NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(command, forType: .string)
-        show(toast: "Copied — paste in Terminal")
+        NSPasteboard.general.setString(text, forType: .string)
+        show(toast: toast)
     }
 
     /// In Obsidian when the notes folder is in an Obsidian vault and Obsidian opens the link; otherwise

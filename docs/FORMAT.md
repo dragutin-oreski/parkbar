@@ -53,7 +53,8 @@ first line, and ParkBar refuses to change it until you remove the duplicate.
 
 ### Dates and states
 
-- **Due**: the target is today. **Late**: the target has passed. The menu bar number counts both.
+- **Due**: the target is today. **Late**: the target has passed. The orange number in the menu bar
+  counts both.
 - **Cold**: active, no target, and `updated` more than `coldAfterDays` days ago (14 by default). Cold
   efforts fold away under the main list. An effort without `updated` is never cold.
 - Making an archived effort active puts it at the bottom of the drag order; if it would be cold,
@@ -134,7 +135,12 @@ written.
   linked todos are shown on that effort. A trailing `→ [[…]]` is hidden when the todo is shown.
 - An open todo under `## Waiting` that starts with a name and ` — ` (one to three words, capitalised)
   is something that person owes you; it shows on their page in the People tab.
-- ParkBar never writes to `todo.md`.
+- Open todos under `## Inbox` (in any case, and every such section) are listed at the top of the
+  Efforts tab, each with a link to every existing effort it names and a copy button for each piece of
+  text it shows as code, once each, so `` say `deploy staging` `` offers to copy `deploy staging`.
+  Backticks inside a link are part of the link, not code. Their number shows in blue in the menu bar,
+  next to the orange one.
+- ParkBar never writes to `todo.md`: you tick Inbox lines in your editor.
 
 ## Agenda lists
 

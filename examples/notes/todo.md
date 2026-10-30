@@ -1,10 +1,12 @@
 # todo — small concrete actions
 
-One line each. Link a line to an effort with [[Effort name]] and it shows on that effort.
+One line each. Link a line to an effort with [[Effort name]] and it shows on that effort. Lines
+under Inbox show at the top of the panel, and text in backticks gets a copy button there.
 
 ## Inbox
 
 - [ ] Renew the test-device subscription
+- [ ] Clear the old build cache before the release build — `make clean-cache` → [[Mobile release 2.4]]
 - [ ] Read the accessibility audit summary
 
 ## Next

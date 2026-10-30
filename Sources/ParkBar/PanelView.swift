@@ -83,7 +83,7 @@ struct PanelView: View {
     private var content: some View {
         if let name = model.openEffort, let effort = model.vault.effort(named: name) {
             EffortDetailView(model: model, effort: effort)
-        } else if model.vault.efforts.isEmpty {
+        } else if model.vault.efforts.isEmpty && model.vault.inbox.isEmpty {
             WelcomeView(model: model)
         } else {
             switch model.tab {
@@ -97,6 +97,7 @@ struct PanelView: View {
     private var header: some View {
         let current = model.vault.current(today: model.today).count
         let due = model.vault.dueOrLateCount(today: model.today)
+        let inbox = model.vault.inbox.count
         return HStack(spacing: 10) {
             AppMark()
             VStack(alignment: .leading, spacing: 1) {
@@ -108,20 +109,26 @@ struct PanelView: View {
                     .foregroundStyle(Theme.text2)
             }
             Spacer()
-            if due > 0 {
-                HStack(spacing: 4) {
-                    Image(systemName: "calendar.badge.exclamationmark")
-                    Text("\(due) due or late")
-                }
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(Theme.late)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 3)
-                .background(Theme.late.opacity(0.15), in: Capsule())
+            HStack(spacing: 6) {
+                if due > 0 { pill("\(due) due or late", symbol: "calendar.badge.exclamationmark", tint: Theme.late) }
+                if inbox > 0 { pill("\(inbox) in Inbox", symbol: "tray", tint: Theme.accent) }
             }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
+    }
+
+    /// A count in the header, in the colour the menu bar gives it.
+    private func pill(_ text: String, symbol: String, tint: Color) -> some View {
+        HStack(spacing: 4) {
+            Image(systemName: symbol)
+            Text(text)
+        }
+        .font(.system(size: 11, weight: .semibold))
+        .foregroundStyle(tint)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 3)
+        .background(tint.opacity(0.15), in: Capsule())
     }
 
     private var footer: some View {

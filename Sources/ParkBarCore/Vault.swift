@@ -103,6 +103,17 @@ public struct Vault: Equatable, Sendable {
         todos.filter { !$0.isChecked && $0.linkedEfforts.contains(name) }
     }
 
+    /// Open todos under `## Inbox`, in file order: listed at the top of the Efforts tab and counted in
+    /// blue in the menu bar.
+    public var inbox: [Todo] { todos.filter { $0.isInbox && !$0.isChecked } }
+
+    /// The efforts a todo links to that exist, in order and once each.
+    public func linkedEfforts(of todo: Todo) -> [String] {
+        todo.linkedEfforts.reduce(into: []) { names, name in
+            if effort(named: name) != nil, !names.contains(name) { names.append(name) }
+        }
+    }
+
     /// Open todos that link to no effort.
     public var looseTodos: [Todo] {
         let names = Set(efforts.map(\.name))

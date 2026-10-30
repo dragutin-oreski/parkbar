@@ -47,10 +47,7 @@ enum Theme {
     /// Inline markdown (bold, links, code) from the notes, with hard-wrapped lines joined back into
     /// paragraphs; anything the parser cannot read is shown as written.
     static func markdown(_ text: String) -> Text {
-        let reflowed = Prose.reflow(text)
-        let options = AttributedString.MarkdownParsingOptions(interpretedSyntax: .inlineOnlyPreservingWhitespace)
-        if let attributed = try? AttributedString(markdown: reflowed, options: options) { return Text(attributed) }
-        return Text(reflowed)
+        Prose.markdown(text).map(Text.init) ?? Text(Prose.reflow(text))
     }
 }
 

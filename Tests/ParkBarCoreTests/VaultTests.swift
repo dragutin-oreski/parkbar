@@ -31,6 +31,36 @@ import Testing
         ])
     }
 
+    @Test func inboxIsTheOpenTodosUnderInbox() throws {
+        #expect(Fixture.vault().inbox.map(\.text) == ["Something with no effort at all"])
+
+        let notes = try TempNotes(["Garden shed": effortFile()])
+        try Data("""
+        ## Inbox
+
+        - [ ] Plain line
+        - [x] Done already
+        - [ ] Ship it — `make ship`, then say `done` → [[Garden shed]]
+        - [ ] Twice and nowhere — `x` and `x` → [[Garden shed]] [[Garden shed]] [[Nowhere]]
+
+        ## Next
+
+        - [ ] Not in the inbox
+
+        ## INBOX
+
+        - [ ] A second inbox section counts too
+        """.utf8).write(to: notes.root.appendingPathComponent("todo.md"))
+        let vault = notes.vault
+        let inbox = vault.inbox
+        #expect(inbox.map(\.text) == ["Plain line", "Ship it — `make ship`, then say `done`", "Twice and nowhere — `x` and `x`",
+                                      "A second inbox section counts too"])
+        #expect(vault.linkedEfforts(of: inbox[1]) == ["Garden shed"])
+        #expect(inbox[1].codeSpans == ["make ship", "done"])
+        #expect(vault.linkedEfforts(of: inbox[2]) == ["Garden shed"], "once each, and only efforts that exist")
+        #expect(inbox[2].codeSpans == ["x"])
+    }
+
     @Test func missingFolderIsAProblemNotACrash() {
         let v = Vault.load(from: URL(fileURLWithPath: "/nonexistent-\(UUID().uuidString)"))
         #expect(v.efforts == [])
@@ -57,6 +87,23 @@ import Testing
         #expect(TodoList.wikiLinks(in: "a [[One]] b [[Two|alias]] c [[Three#H|x]]") == ["One", "Two", "Three"])
         #expect(TodoList.displayText("Do it → [[One]]") == "Do it")
         #expect(TodoList.displayText("See [[One]] first") == "See [[One]] first")
+    }
+
+    /// A copy button offers exactly what the line shows as code: markdown code spans, never backticks
+    /// inside a link's address or title.
+    @Test func codeSpansAreWhatACopyButtonCopies() {
+        #expect(TodoList.codeSpans(in: "Read [manual](https://example.com/`v1) then `make deploy`") == ["make deploy"])
+        #expect(TodoList.codeSpans(in: #"Read [instructions](https://example.com "run `make deploy`")"#) == [])
+        #expect(TodoList.codeSpans(in: "see [`x`](https://example.com)") == [], "code inside link text is shown as the link")
+        #expect(TodoList.codeSpans(in: "say `deploy staging` in that session") == ["deploy staging"])
+        #expect(TodoList.codeSpans(in: "run `make a`, then `make b`") == ["make a", "make b"])
+        #expect(TodoList.codeSpans(in: "``echo `date` now``") == ["echo `date` now"])
+        #expect(TodoList.codeSpans(in: "`` `quoted` ``") == ["`quoted`"], "one space each side is dropped")
+        #expect(TodoList.codeSpans(in: "it's `a` and `b") == ["a"], "an unmatched backtick is plain text")
+        #expect(TodoList.codeSpans(in: "``two`` then `one`") == ["two", "one"])
+        #expect(TodoList.codeSpans(in: #"escaped \`not code\` here"#) == [])
+        #expect(TodoList.codeSpans(in: "blank `  ` span") == [])
+        #expect(TodoList.codeSpans(in: "no code at all") == [])
     }
 }
 

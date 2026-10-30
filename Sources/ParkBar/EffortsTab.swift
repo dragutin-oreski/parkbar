@@ -1,16 +1,22 @@
 import ParkBarCore
 import SwiftUI
 
-/// The active efforts in drag order, with the cold ones folded away underneath.
+/// The Inbox, if it has open todos, then the active efforts in drag order, with the cold ones folded away
+/// underneath.
 struct EffortsTab: View {
     @ObservedObject var model: AppModel
     @State private var showCold = false
 
     var body: some View {
+        let inbox = model.vault.inbox
         let current = model.vault.current(today: model.today)
         let cold = model.vault.cold(today: model.today)
         PanelScroll {
             VStack(alignment: .leading, spacing: 8) {
+                if !inbox.isEmpty {
+                    InboxSection(model: model, todos: inbox)
+                        .padding(.bottom, 4)
+                }
                 if current.isEmpty && cold.isEmpty {
                     EmptyState(symbol: "parkingsign", text: "Nothing parked. /park writes efforts into \(Vault.effortsFolder)/.")
                 }

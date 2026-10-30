@@ -18,6 +18,13 @@ public enum Prose {
         return out.joined(separator: "\n")
     }
 
+    /// The prose as the panel shows it: hard-wrapped lines joined back into paragraphs, then inline
+    /// markdown (bold, links, code) parsed. Nil when the parser cannot read it.
+    public static func markdown(_ text: String) -> AttributedString? {
+        let options = AttributedString.MarkdownParsingOptions(interpretedSyntax: .inlineOnlyPreservingWhitespace)
+        return try? AttributedString(markdown: reflow(text), options: options)
+    }
+
     static func isListItem(_ trimmed: String) -> Bool {
         if trimmed.hasPrefix("- ") || trimmed.hasPrefix("* ") { return true }
         let digits = trimmed.prefix { $0.isNumber }
