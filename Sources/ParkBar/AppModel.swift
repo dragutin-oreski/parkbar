@@ -32,11 +32,19 @@ final class AppModel: ObservableObject {
     /// The last write that did not go through, shown until the next successful one.
     @Published var problem: String?
     @Published private(set) var toast: String?
+    /// Every alert in `alerts.jsonl`, as last read; the panel shows the recent ones (`recentAlerts`).
+    @Published private(set) var alerts: [Notice] = []
+    /// Checked every minute, so alerts age out while the panel is open.
+    @Published private(set) var now = Date()
+    /// Alerts up to this moment were cleared by the cross; remembered across launches.
+    @Published private(set) var alertsClearedAt: Date? = UserDefaults.standard.object(forKey: "alertsClearedAt") as? Date
     /// What the last start found left by an interrupted save, until dismissed.
     @Published var recoveryNotice: String?
     private(set) var recoveredFiles: [URL] = []
 
     private var watcher: FolderWatcher?
+    private var alertsWatcher: FolderWatcher?
+    private var minuteClock: Timer?
     private var clock: Timer?
     /// While the notes folder has no efforts/ yet: looks every few seconds, so the first /park shows up.
     private var waitingForFolder: Timer?
@@ -53,9 +61,11 @@ final class AppModel: ObservableObject {
         self.today = today
         vault = Vault.load(from: folder, config: setup.config)
         opensInObsidian = Vault.obsidianVault(containing: folder) != nil
+        alerts = Notice.load(from: Notice.url())
         guard live else { return }
         noteRecovery(SafeStorage.standard.reconcile())
         watch()
+        watchAlerts()
         // Cold, due and late all move at midnight; a few minutes late is fine.
         clock = Timer.scheduledTimer(withTimeInterval: 300, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.refreshToday() }
@@ -86,6 +96,26 @@ final class AppModel: ObservableObject {
                 self?.watch()
                 self?.reload()
             }
+        }
+    }
+
+    var recentAlerts: [Notice] { Notice.recent(alerts, now: now, clearedAt: alertsClearedAt) }
+
+    func clearAlerts() {
+        let at = Date()
+        alertsClearedAt = at
+        UserDefaults.standard.set(at, forKey: "alertsClearedAt")
+    }
+
+    /// Reads `alerts.jsonl` now and whenever ParkBar's support folder changes; ticks `now` every minute.
+    private func watchAlerts() {
+        let storage = SafeStorage.standard
+        let url = Notice.url(in: storage)
+        try? FileManager.default.createDirectory(at: storage.root, withIntermediateDirectories: true)
+        alerts = Notice.load(from: url)
+        alertsWatcher = FolderWatcher(url: storage.root) { [weak self] in self?.alerts = Notice.load(from: url) }
+        minuteClock = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
+            Task { @MainActor in self?.now = Date() }
         }
     }
 

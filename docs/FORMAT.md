@@ -226,3 +226,19 @@ resume: "claude --resume <session>"
 
 It is active, at the bottom of the drag order, with no target. The first drag or date you set adds
 the missing line.
+
+## Alerts from other programs (`alerts.jsonl`)
+
+Another program, such as a Claude Code hook, can leave you a short notice by appending one JSON object
+per line to `alerts.jsonl` in ParkBar's support folder (`~/Library/Application Support/ParkBar`, or
+`$PARKBAR_SUPPORT`):
+
+```json
+{"at":"2026-11-06T14:32:05Z","title":"signing key 'Dev'","source":"Release build session","detail":"Package the app","symbol":"key.fill","copy":"claude --resume 1234"}
+```
+
+- `at` (ISO 8601, UTC) and `title` (what it is about) are required; `source` (who), `detail` (why),
+  `symbol` (an SF Symbol) and `copy` are optional. Lines that do not parse are skipped.
+- Notices from the last 30 minutes show above every tab, newest first (three, then a count), and the
+  menu bar icon shows the newest one's symbol. A click copies `copy`; the cross clears them all.
+- ParkBar only reads this file. The program that writes it keeps it short.

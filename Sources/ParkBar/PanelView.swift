@@ -65,6 +65,9 @@ struct PanelView: View {
                 .padding(.horizontal, 12)
                 .padding(.top, 8)
             }
+            if !model.recentAlerts.isEmpty {
+                AlertsStrip(model: model, alerts: model.recentAlerts)
+            }
             content
                 .frame(maxHeight: .infinity, alignment: .top)
             Divider()
