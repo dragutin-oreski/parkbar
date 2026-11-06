@@ -59,6 +59,11 @@ A todo that points at an effort with `[[Effort name]]`, shown with that effort.
 The todos under `## Inbox` in `todo.md`: things to do soon. The open ones are listed at the top of
 the Efforts tab and counted in blue in the menu bar.
 
+**Today's plan**:
+The few things you mean to do today, kept in `today.md` and shown first in the Efforts tab. Open
+items from an earlier day are **left over** until you keep them for today or drop them.
+_Avoid_: Daily todo, agenda
+
 **Question**:
 An item under a `Clarify with <person>` label: something only that person can answer. Under a
 `Decide myself` label, something only you can decide.

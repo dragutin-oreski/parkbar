@@ -4,11 +4,14 @@ import Foundation
 public struct Vault: Equatable, Sendable {
     public static let effortsFolder = "efforts"
     public static let todoFile = "todo.md"
+    /// The day's plan; the only file outside `efforts/` that ParkBar writes.
+    public static let todayFile = "today.md"
 
     public let root: URL
     public let efforts: [Effort]
     public let todos: [Todo]
     public let agendas: [AgendaList]
+    public let todayPlan: TodayPlan
     /// Files that could not be read, as short messages for the panel.
     public let problems: [String]
     /// False when the notes folder has no `efforts/` folder: the app shows its welcome instead.
@@ -16,11 +19,12 @@ public struct Vault: Equatable, Sendable {
     public let config: ParkBarConfig
 
     public init(root: URL, efforts: [Effort], todos: [Todo], agendas: [AgendaList], problems: [String] = [],
-                hasEffortsFolder: Bool = true, config: ParkBarConfig = .default) {
+                hasEffortsFolder: Bool = true, config: ParkBarConfig = .default, todayPlan: TodayPlan = TodayPlan()) {
         self.root = root
         self.efforts = efforts
         self.todos = todos
         self.agendas = agendas
+        self.todayPlan = todayPlan
         self.problems = problems
         self.hasEffortsFolder = hasEffortsFolder
         self.config = config
@@ -41,15 +45,16 @@ public struct Vault: Equatable, Sendable {
         } else {
             problems.append("Could not read the \(effortsFolder)/ folder")
         }
-        func optionalText(_ name: String) -> String? {
+        func optionalFile(_ name: String) -> NoteFile? {
             let url = root.appendingPathComponent(name)
             guard fileManager.fileExists(atPath: url.path) else { return nil }
             guard let file = try? NoteFile.read(url) else {
                 problems.append("Could not read \(name)")
                 return nil
             }
-            return file.text
+            return file
         }
+        func optionalText(_ name: String) -> String? { optionalFile(name)?.text }
         let efforts: [Effort] = files
             .filter { $0.pathExtension == "md" && !$0.lastPathComponent.hasPrefix(".") }
             .sorted { $0.lastPathComponent < $1.lastPathComponent }
@@ -65,8 +70,9 @@ public struct Vault: Equatable, Sendable {
         let agendas = config.agendaLists.compactMap { list -> AgendaList? in
             optionalText(list.file).map { AgendaList(person: list.person, fileName: list.file, text: $0) }
         }
+        let todayPlan = optionalFile(todayFile).map { TodayPlan.parse($0.text, hash: $0.hash) } ?? TodayPlan()
         return Vault(root: root, efforts: efforts, todos: TodoList.parse(todoText), agendas: agendas, problems: problems,
-                     hasEffortsFolder: hasFolder, config: config)
+                     hasEffortsFolder: hasFolder, config: config, todayPlan: todayPlan)
     }
 
     // MARK: - Views over the efforts

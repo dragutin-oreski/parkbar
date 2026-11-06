@@ -187,6 +187,26 @@ final class AppModel: ObservableObject {
         edit { try $0.activate(name, today: today) }
     }
 
+    // MARK: - Today's plan
+
+    /// True when it was saved, so the field can clear.
+    @discardableResult
+    func addToday(_ text: String) -> Bool {
+        edit { try $0.addToday(text, today: today) } == nil
+    }
+
+    func setToday(_ item: TodayPlan.Item, checked: Bool) {
+        edit { try $0.setToday(item, checked: checked, today: today) }
+    }
+
+    func removeToday(_ item: TodayPlan.Item) {
+        edit { try $0.removeToday(item, today: today) }
+    }
+
+    func keepForToday(_ item: TodayPlan.Item) {
+        edit { try $0.keepForToday(item, today: today) }
+    }
+
     // MARK: - Recovery
 
     /// One line naming the note an interrupted save left a version of; Show reveals the files.

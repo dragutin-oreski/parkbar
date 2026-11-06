@@ -11,6 +11,8 @@ struct CLI {
       show <name>                   one effort: fields, where I am, questions, then, linked todos
       people                        everyone with open questions, waiting items or an agenda list
       inbox                         open todos under ## Inbox, with the efforts they link to
+      today                         today's plan from today.md, then open items left from earlier days
+      today-add <text>              adds a thing to today's plan
       set-target <name> <YYYY-MM-DD|none>
       set-next <name> <text|none>
       move <name> <position>        1 = top of the drag order
@@ -25,7 +27,7 @@ struct CLI {
     change notes refuse to run unless --notes names the folder; the others go on with a warning.
     """
 
-    static let changesNotes: Set = ["set-target", "set-next", "move", "archive", "activate", "tick", "untick"]
+    static let changesNotes: Set = ["set-target", "set-next", "move", "archive", "activate", "tick", "untick", "today-add"]
 
     static func main() {
         var args = Array(CommandLine.arguments.dropFirst())
@@ -75,6 +77,9 @@ struct CLI {
             case "show": try show(effort(vault, rest), vault: vault, today: today)
             case "people": people(vault)
             case "inbox": inbox(vault)
+            case "today": todayPlan(vault, today: today)
+            case "today-add":
+                notices = try NotesEditor(vault: vault).addToday(rest.joined(separator: " "), today: today)
             case "set-target":
                 let value = try argument(rest, 1)
                 let day: Day? = value == "none" ? nil : try Day(value).orThrow("not a YYYY-MM-DD day: \(value)")
@@ -148,6 +153,18 @@ struct CLI {
         for todo in vault.inbox {
             let links = vault.linkedEfforts(of: todo)
             print("  - \(todo.text)\(links.isEmpty ? "" : "  → \(links.joined(separator: ", "))")")
+        }
+    }
+
+    static func todayPlan(_ vault: Vault, today: Day) {
+        let plan = vault.todayPlan
+        let progress = plan.progress(on: today)
+        print("TODAY \(today) (\(progress.done)/\(progress.total) done)")
+        plan.items(on: today).forEach { print("  \($0.isChecked ? "☑" : "☐") \($0.text)") }
+        let left = plan.leftovers(on: today)
+        if !left.isEmpty {
+            print("LEFT FROM EARLIER (\(left.count))")
+            left.forEach { print("  ☐ \($0.text)  (\($0.day?.description ?? "no date"))") }
         }
     }
 

@@ -142,6 +142,32 @@ written.
   next to the orange one.
 - ParkBar never writes to `todo.md`: you tick Inbox lines in your editor.
 
+## Today's plan (`today.md`)
+
+A few things you mean to do today, typed into the card at the top of the Efforts tab. ParkBar keeps
+them in `today.md` next to `todo.md`, under a heading per day:
+
+```markdown
+# Today
+
+## 2026-11-06
+- [ ] Review the checkout pull request
+- [x] Answer the pricing question
+
+## 2026-11-05
+- [ ] Book the meeting room
+```
+
+- The checkboxes under today's date are today's plan; you tick, add and remove them in the panel.
+- Open items under an earlier date (or under any other heading) are **left over**: the card lists them
+  under "Left from earlier", to keep for today or drop. Ticking one counts it as done today.
+- Ticked items from earlier days no longer show.
+- This is the one file outside `efforts/` that ParkBar writes, and it owns it: each change lays the file
+  out again with today's items first and the open leftovers below, newest day first. Lines that are not
+  checkboxes are not kept. You can still edit it in your editor; a change made while the panel was
+  showing the old version is refused, never overwritten. If `today.md` is a link to `todo.md` or an
+  agenda list, ParkBar does not write it.
+
 ## Agenda lists
 
 A running list of topics to go through with one person, shown read-only on their page. Name each

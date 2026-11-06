@@ -1,7 +1,7 @@
 import ParkBarCore
 import SwiftUI
 
-/// The Inbox, if it has open todos, then the active efforts in drag order, with the cold ones folded away
+/// Today's plan, the Inbox if it has open todos, then the active efforts in drag order, with the cold ones folded away
 /// underneath.
 struct EffortsTab: View {
     @ObservedObject var model: AppModel
@@ -13,6 +13,8 @@ struct EffortsTab: View {
         let cold = model.vault.cold(today: model.today)
         PanelScroll {
             VStack(alignment: .leading, spacing: 8) {
+                TodaySection(model: model)
+                    .padding(.bottom, 4)
                 if !inbox.isEmpty {
                     InboxSection(model: model, todos: inbox)
                         .padding(.bottom, 4)

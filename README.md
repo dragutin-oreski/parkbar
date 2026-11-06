@@ -29,7 +29,9 @@ open build/ParkBar.app
 ```
 
 The **P** icon appears in the menu bar, with an orange count of efforts due today or late and a
-blue count of open todos in your Inbox. On first start
+blue count of open todos in your Inbox. The Efforts tab opens with **Today**: type the two to four
+things you mean to do today, tick them as you go; tomorrow the unfinished ones wait under "Left from
+earlier". On first start
 it looks for notes in `~/Documents/ParkBar`; if there are none it offers **Choose folder…** and
 **Try the example notes**. Each try makes a fresh copy of [examples/notes](examples/notes) in
 ParkBar's support folder, its dates moved to that day, and shows it with
@@ -39,7 +41,7 @@ ParkBar's support folder, its dates moved to that day, and shows it with
 To keep it, copy `build/ParkBar.app` to `/Applications` (or run
 `INSTALL_TO=/Applications scripts/bundle.sh release`) and add it to your login items. There is also
 a medium Notification Center widget with your top efforts, and a terminal tool,
-`.build/release/parkbar-cli` (`parkbar-cli list`, `show <name>`, `people`, `inbox`, `config`, …).
+`.build/release/parkbar-cli` (`parkbar-cli list`, `show <name>`, `people`, `inbox`, `today`, `config`, …).
 
 The build is signed ad-hoc, which is enough for the app. The widget is happier with a stable
 signature; see [scripts/make-signing-identity.sh](scripts/make-signing-identity.sh).
