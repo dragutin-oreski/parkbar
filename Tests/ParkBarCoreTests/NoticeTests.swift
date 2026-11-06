@@ -11,12 +11,13 @@ import Testing
         not json
         {"at":"yesterday","title":"bad date"}
         {"at":"2026-11-06T14:35:00Z","title":"  "}
-        {"at":"2026-11-06T14:36:00Z","title":"read 'token'"}
+        {"at":"2026-11-06T14:36:00Z","title":"read 'token'","action":"Click Allow"}
         """
         let notices = Notice.parse(text)
         #expect(notices.map(\.title) == ["signing key 'Dev'", "read 'token'"])
         #expect(notices[0].source == "Release build" && notices[0].copy == "claude --resume 1")
-        #expect(notices[1].source == nil && notices[1].symbol == nil)
+        #expect(notices[1].source == nil && notices[1].symbol == nil && notices[1].action == "Click Allow")
+        #expect(notices[0].action == nil)
     }
 
     @Test func recentIsNewestFirstWithinHalfAnHourAndAfterClearing() {

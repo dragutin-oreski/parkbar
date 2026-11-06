@@ -7,7 +7,7 @@ import Foundation
 ///     {"at":"2026-11-06T14:32:05Z","title":"signing key 'Dev'","source":"Release build session",
 ///      "detail":"Package a release build","symbol":"key.fill","copy":"claude --resume 1234"}
 ///
-/// `at` and `title` are required; the rest is optional. Lines that do not parse are skipped.
+/// `at` and `title` are required; the rest (`source`, `detail`, `symbol`, `copy`, `action`) is optional. Lines that do not parse are skipped.
 public struct Notice: Equatable, Identifiable, Sendable {
     public static let fileName = "alerts.jsonl"
     /// How long an alert stays listed.
@@ -24,16 +24,20 @@ public struct Notice: Equatable, Identifiable, Sendable {
     public let symbol: String?
     /// Text a click copies, such as a command that reopens the source.
     public let copy: String?
+    /// What you need to do about it, if anything.
+    public let action: String?
 
     public var id: String { "\(at.timeIntervalSince1970)|\(title)|\(source ?? "")" }
 
-    public init(at: Date, title: String, source: String? = nil, detail: String? = nil, symbol: String? = nil, copy: String? = nil) {
+    public init(at: Date, title: String, source: String? = nil, detail: String? = nil, symbol: String? = nil, copy: String? = nil,
+                action: String? = nil) {
         self.at = at
         self.title = title
         self.source = source
         self.detail = detail
         self.symbol = symbol
         self.copy = copy
+        self.action = action
     }
 
     public static func url(in storage: SafeStorage = .standard) -> URL {
@@ -47,7 +51,8 @@ public struct Notice: Equatable, Identifiable, Sendable {
                   let stamp = object["at"] as? String, let at = ISO8601DateFormatter().date(from: stamp),
                   let title = nonBlank(object["title"]) else { return nil }
             return Notice(at: at, title: title, source: nonBlank(object["source"]), detail: nonBlank(object["detail"]),
-                         symbol: nonBlank(object["symbol"]), copy: nonBlank(object["copy"]))
+                         symbol: nonBlank(object["symbol"]), copy: nonBlank(object["copy"]),
+                          action: nonBlank(object["action"]))
         }
     }
 

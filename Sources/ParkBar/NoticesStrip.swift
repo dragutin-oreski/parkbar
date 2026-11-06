@@ -39,40 +39,49 @@ struct AlertRow: View {
     let alert: Notice
 
     var body: some View {
-        Button {
-            if let text = alert.copy { model.copy(text, toast: "Copied — paste in Terminal") }
-        } label: {
-            HStack(alignment: .firstTextBaseline, spacing: 7) {
-                Image(systemName: alert.symbol ?? "bell.fill")
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(Theme.late)
-                    .frame(width: 14)
-                VStack(alignment: .leading, spacing: 1) {
-                    HStack(spacing: 5) {
-                        Text(alert.at, format: .dateTime.hour().minute())
-                            .font(.system(size: 11, weight: .medium).monospacedDigit())
-                            .foregroundStyle(Theme.text2)
-                        Text(alert.title)
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(Theme.text)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                    }
-                    if alert.source != nil || alert.detail != nil {
-                        (Text(alert.source.map { $0 + (alert.detail == nil ? "" : " — ") } ?? "").fontWeight(.semibold)
-                            + Text(alert.detail ?? ""))
-                            .font(.system(size: 11))
-                            .foregroundStyle(Theme.text2)
-                            .lineLimit(2)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
-                .padding(.trailing, 14)
-                Spacer(minLength: 0)
-            }
-            .contentShape(Rectangle())
+        if let text = alert.copy {
+            Button { model.copy(text, toast: "Copied") } label: { row }
+                .buttonStyle(.plain)
+                .help("Copy \(text)")
+        } else {
+            row
         }
-        .buttonStyle(.plain)
-        .help(alert.copy.map { "Copy \($0)" } ?? alert.title)
+    }
+
+    /// Time and what, then who and why in full, then what to do.
+    private var row: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 7) {
+            Image(systemName: alert.symbol ?? "bell.fill")
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(Theme.late)
+                .frame(width: 14)
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 5) {
+                    Text(alert.at, format: .dateTime.hour().minute())
+                        .font(.system(size: 11, weight: .medium).monospacedDigit())
+                        .foregroundStyle(Theme.text2)
+                    Text(alert.title)
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Theme.text)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                if alert.source != nil || alert.detail != nil {
+                    (Text(alert.source.map { $0 + (alert.detail == nil ? "" : " — ") } ?? "").fontWeight(.semibold)
+                        + Text(alert.detail ?? ""))
+                        .font(.system(size: 11))
+                        .foregroundStyle(Theme.text2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                if let action = alert.action {
+                    Text(action)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(Theme.late)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .padding(.trailing, 14)
+            Spacer(minLength: 0)
+        }
+        .contentShape(Rectangle())
     }
 }

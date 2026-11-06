@@ -238,7 +238,8 @@ per line to `alerts.jsonl` in ParkBar's support folder (`~/Library/Application S
 ```
 
 - `at` (ISO 8601, UTC) and `title` (what it is about) are required; `source` (who), `detail` (why),
-  `symbol` (an SF Symbol) and `copy` are optional. Lines that do not parse are skipped.
+  `symbol` (an SF Symbol), `copy` (text a click copies) and `action` (what you need to do, shown
+  as its own line) are optional. Lines that do not parse are skipped.
 - Notices from the last 30 minutes show above every tab, newest first (three, then a count), and the
-  menu bar icon shows the newest one's symbol. A click copies `copy`; the cross clears them all.
+  menu bar icon shows the newest one's symbol. Every line is shown in full. A click copies `copy`, if there is one; the cross clears them all.
 - ParkBar only reads this file. The program that writes it keeps it short.
